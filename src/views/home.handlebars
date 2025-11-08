@@ -1,0 +1,31 @@
+<div></div>
+<h1>Lista de Productos</h1>
+
+<div id="product-list" class="product-grid">
+  {{#each products}}
+    <div class="product-card">
+      <img src="{{this.thumbnail}}" alt="{{this.title}}">
+      <h3>{{this.title}}</h3>
+      <p class="price">$ {{this.price}}</p>
+    </div>
+  {{/each}}
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  socket.on("updateProducts", data => {
+    const list = document.getElementById("product-list");
+    list.innerHTML = "";
+    data.forEach(p => {
+      list.innerHTML += `
+        <div class="product-card">
+          <img src="${p.thumbnail || ''}" alt="${p.title}">
+          <h3>${p.title}</h3>
+          <p class="price">$ ${p.price}</p>
+        </div>
+      `;
+    });
+  });
+</script>
+

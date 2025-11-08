@@ -1,69 +1,48 @@
 import express from "express";
-import ProductManager from "./productManager.js";
+import http from "http";
+import { engine } from "express-handlebars";
+import { Server } from "socket.io";
+import viewsRouter from "./routes/views.route.js";
+import productsRouter from "./routes/products.route.js";
 import CartManager from "./cartManager.js";
+import ProductManager from "./productManager.js";
+
 
 const app = express();
-app.use(express.json());
+const server = http.createServer(app);
 const productManager = new ProductManager("./src/products.json");
+
+export const io = new Server(server);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
+
+app.use(express.static("public"));
+
+app.use("/", viewsRouter);
+app.use("/api/products", productsRouter);
+
+server.listen(8080, () => {
+  console.log("Servidor Iniciado");
+});
+
+io.on("connection", (socket) => {
+  console.log("Cliente conectado ✅");
+
+  socket.on("deleteProductFromClient", async (productId) => {
+    await productManager.deleteProductByID(productId);
+    const updatedProducts = await productManager.getProducts();
+    io.emit("updateProducts", updatedProducts);
+  });
+});
+
+// 
+
 const cartManager = new CartManager("./src/carts.json");
-
-app.get("/api/products", async (req, res) => {
-  try {
-    const products = await productManager.getProducts();
-
-    res.status(200).json({ message: "Lista de Productos", products });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.get("/api/products/:pid", async (req, res) => {
-  try {
-    const product = await productManager.getProductsByID(pid);
-
-    res.status(200).json({ message: "Producto Encontrado", product });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.post("/api/products", async (req, res) => {
-  try {
-    const newProduct = req.body;
-    const products = await productManager.addProduct(newProduct);
-    res.status(201).json({ message: "Se Añadio el producto", products });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.put("/api/products/:pid", async (req, res) => {
-  try {
-    const pid = req.params.pid;
-    const updates = req.body;
-
-    if ("id" in updates) {
-      delete updates.id;
-    }
-
-    const products = await productManager.setProductByID(pid, updates);
-    res.status(200).json({ message: "Producto Actualizado", products });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-app.delete("/api/products/:pid", async (req, res) => {
-  try {
-    const pid = req.params.pid;
-
-    const products = await productManager.deleteProductByID(pid);
-
-    res.status(200).json({ message: "Producto eliminado", products });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 //
 
@@ -101,6 +80,5 @@ app.post("/api/carts/:cid/product/:pid", async (req, res) => {
   }
 });
 
-app.listen(8080, () => {
-  console.log("Server iniciado!");
-});
+// 
+

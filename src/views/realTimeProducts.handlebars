@@ -1,0 +1,32 @@
+
+<h3>Agregar Producto</h3>
+
+<form id="form-add" style="display:flex; flex-direction:column; gap:8px; width:300px;" method="post" action="http://localhost:8080/api/products" enctype="multipart/form-data">
+  <input name="title" placeholder="Título" required>
+  <input name="description" placeholder="Descripción" required>
+  <input name="code" placeholder="Código" required>
+  <input name="price" type="number" placeholder="Precio" required>
+  <input name="stock" type="number" placeholder="Stock" required>
+  <input name="category" placeholder="Categoría" required>
+  <input name="thumbnail" type="file" placeholder="Thumbnail (opcional)">
+  <button type="submit">Agregar Producto</button>
+</form>
+
+<hr>
+
+<h3>Lista de Productos</h3>
+
+<div id="product-list" class="product-grid">
+  {{#each products}}
+    <div class="product-card">
+      <img src="{{this.thumbnail}}" alt="{{this.title}}">
+      <h3>{{this.title}}</h3>
+      <p class="price">$ {{this.price}}</p>
+      <button onclick="deleteProduct('{{this.id}}')">Eliminar</button>
+    </div>
+  {{/each}}
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realtime.js"></script>

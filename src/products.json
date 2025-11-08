@@ -1,13 +1,1 @@
-[
-  {
-    "id": "56f5674c-c32a-453f-b750-69e1c6da25c3",
-    "title": "Shampoo",
-    "description": "Shampoo ph neutro",
-    "code": "12sge2",
-    "price": 10000,
-    "status": true,
-    "stock": 12,
-    "category": "Lavados",
-    "thumbnail": "shampoo.png"
-  }
-]
+[]
