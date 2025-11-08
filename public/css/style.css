@@ -4,6 +4,22 @@ body {
     color: white;
 }
 
+.navbar {
+  margin: 20px;
+}
+
+.navbar a{
+  text-decoration: none;
+  color: white;
+  margin: 20px;
+}
+
+.navbar a:hover{
+  border: solid 1px white;
+  padding: 10px;
+  color: aqua;
+}
+
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
